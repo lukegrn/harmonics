@@ -1,20 +1,82 @@
 import React, { useEffect, useState } from "react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router";
 import "./App.css";
+import { Harmonics } from "./pages/Harmonics";
+import {
+  AppShell,
+  Burger,
+  createTheme,
+  MantineProvider,
+  NavLink,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDrum, faHouse } from "@fortawesome/free-solid-svg-icons";
+import { Bands } from "./pages/Bands";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-function App() {
-  const [response, setResponse] = useState("");
+const theme = createTheme({});
 
-  useEffect(() => {
-    fetch("/api/ping")
-      .then((res) => res.json())
-      .then((json) => setResponse(json.message));
-  }, []);
+const Shell = () => {
+  const [opened, { toggle }] = useDisclosure();
+  const navigate = useNavigate();
 
   return (
-    <div>
-      <h1>Harmonics</h1>
-      <p>Response: {response}</p>
-    </div>
+    <MantineProvider theme={theme}>
+      <AppShell
+        padding="xl"
+        header={{ height: 60 }}
+        navbar={{
+          width: 300,
+          breakpoint: "sm",
+          collapsed: { mobile: !opened },
+        }}
+      >
+        <AppShell.Header>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <div>Logo</div>
+        </AppShell.Header>
+
+        <AppShell.Navbar>
+          <NavLink
+            onClick={() => navigate("/")}
+            label="Home"
+            leftSection={<FontAwesomeIcon icon={faHouse} />}
+          />
+          <NavLink
+            onClick={() => navigate("/bands")}
+            label="bands"
+            leftSection={<FontAwesomeIcon icon={faDrum} />}
+          />
+        </AppShell.Navbar>
+
+        <AppShell.Main>
+          <Routes>
+            <Route path="/" element={<Harmonics />} />
+            <Route path="/bands" element={<Bands />} />
+          </Routes>
+        </AppShell.Main>
+      </AppShell>
+    </MantineProvider>
+  );
+};
+
+function App() {
+  const queryClient = new QueryClient();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Shell />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

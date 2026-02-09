@@ -4,6 +4,9 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+// core styles are required for all packages
+import "@mantine/core/styles.css";
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
