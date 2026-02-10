@@ -1,4 +1,4 @@
-package bands
+package genres
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 )
 
 func List(c *gin.Context) {
-	var bands []models.Band
+	var genres []models.Genre
 
 	db, err := db.DB()
 	if err != nil {
@@ -17,11 +17,11 @@ func List(c *gin.Context) {
 		return
 	}
 
-	err = db.Model(models.Band{}).Preload("Genres").Find(&bands).Error
-	if err != nil {
+	res := db.Find(&genres)
+	if res.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
 		return
 	}
 
-	c.JSON(http.StatusOK, bands)
+	c.JSON(http.StatusOK, genres)
 }
