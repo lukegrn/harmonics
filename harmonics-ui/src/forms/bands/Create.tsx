@@ -6,24 +6,29 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
+  Center,
   Group,
   Image,
   Loader,
   Space,
+  TagsInput,
   Text,
   TextInput,
 } from "@mantine/core";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
+import { useAddBandImage } from "../../hooks/api/useAddBandImage";
 import { useCreateBand } from "../../hooks/api/useCreateBand";
+import { useListGenres } from "../../hooks/api/useListGenres";
+import { Genre } from "../../types/genre";
 
 interface CreateBandProps {
   onSuccess: () => void;
 }
 
 export const CreateBand = ({ onSuccess }: CreateBandProps) => {
-  const form = useForm({
+  const form = useForm<{ name: string; genres: string[] }>({
     mode: "uncontrolled",
     initialValues: {
       name: "",
@@ -33,9 +38,27 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
 
   const [file, setFile] = useState<FileWithPath>();
   const mutation = useCreateBand();
+  const addImage = useAddBandImage();
+  const { data: genres, isLoading: areGenresLoading } = useListGenres();
 
   const submit = () => {
-    mutation.mutate({ ...form.getValues(), img: file }, { onSuccess });
+    const value = form.getValues();
+    mutation.mutate(
+      {
+        name: value.name,
+        genres: value.genres.map((name) => ({ name, bands: [] })),
+        img: file,
+      },
+      {
+        onSuccess: () => {
+          if (file) {
+            addImage.mutate({ f: file, name: value.name });
+          }
+
+          onSuccess();
+        },
+      },
+    );
   };
 
   const Preview = () => {
@@ -48,6 +71,14 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
 
     return <></>;
   };
+
+  if (areGenresLoading) {
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
+  }
 
   return (
     <>
@@ -91,7 +122,12 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
         label="Name"
         placeholder="Name"
       />
-      <TextInput label="Genre tags" placeholder="Genres" />
+      <TagsInput
+        label="Genres"
+        placeholder="Pick a genre from the list, or add a new one"
+        data={genres?.map((g) => g.name)}
+        {...form.getInputProps("genres")}
+      />
       <Space h="md" />
       <Group justify="flex-end">
         <Button disabled={mutation.isPending} onClick={submit}>

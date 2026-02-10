@@ -1,7 +1,8 @@
 import { FileWithPath } from "@mantine/dropzone";
+import { Genre } from "./genre";
 
 export interface Band {
   name: string;
-  genres: string[];
+  genres: Genre[];
   img?: FileWithPath;
 }

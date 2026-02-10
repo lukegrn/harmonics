@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lukegrn/harmonics/api/handlers/bands"
+	"github.com/lukegrn/harmonics/api/handlers/genres"
 )
 
 func RegisterRoutes(router *gin.Engine) {
@@ -19,6 +20,13 @@ func RegisterRoutes(router *gin.Engine) {
 		})
 	})
 
-	api.POST("/bands", bands.Create)
-	api.GET("/bands", bands.List)
+	bandRoutes := api.Group("/bands")
+
+	bandRoutes.POST("", bands.Create)
+	bandRoutes.GET("/", bands.List)
+	bandRoutes.POST("/:name/img", bands.AddImage)
+
+	genreRoutes := api.Group("/genres")
+	genreRoutes.GET("/", genres.List)
+	// genreRoutes.POST("/")
 }

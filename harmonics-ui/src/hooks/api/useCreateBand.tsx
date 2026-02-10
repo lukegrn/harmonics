@@ -7,10 +7,12 @@ export const useCreateBand = () => {
 
   return useMutation({
     mutationFn: (band: Band) => {
-      return axios.postForm("/api/bands", band);
+      return axios.post("/api/bands", band);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bands"] });
+      // Genres may have been created during the band creation, refetch those too
+      queryClient.invalidateQueries({ queryKey: ["genres"] });
     },
   });
 };
