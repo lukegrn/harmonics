@@ -32,3 +32,5 @@ go.work.sum
 # .vscode/
 
 harmonics.db
+
+static

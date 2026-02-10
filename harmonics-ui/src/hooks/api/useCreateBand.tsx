@@ -7,7 +7,7 @@ export const useCreateBand = () => {
 
   return useMutation({
     mutationFn: (band: Band) => {
-      return axios.post("/api/bands", band);
+      return axios.postForm("/api/bands", band);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bands"] });

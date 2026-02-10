@@ -1,7 +1,8 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Center, Loader, Text } from "@mantine/core";
+import { Alert, Center, Loader, SimpleGrid, Text } from "@mantine/core";
 import { useListBands } from "../../hooks/api/useListBands";
+import { BandCover } from "./BandCover";
 
 export const BandsTable = () => {
   const { data: bands, isLoading, isError } = useListBands();
@@ -22,5 +23,9 @@ export const BandsTable = () => {
     );
   }
 
-  return <>{bands?.map((band) => <Text>{band.name}</Text>)}</>;
+  return (
+    <SimpleGrid cols={4}>
+      {bands?.map((band) => <BandCover band={band} />)}
+    </SimpleGrid>
+  );
 };

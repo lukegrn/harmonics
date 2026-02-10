@@ -8,6 +8,9 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
+	static := router.Group("/static")
+	static.Static("/", "./static")
+
 	api := router.Group("/api")
 
 	api.GET("/ping", func(c *gin.Context) {
