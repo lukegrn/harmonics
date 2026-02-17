@@ -1,26 +1,28 @@
 import { Button, Group, Modal, Space, Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useEffect } from "react";
+import { useDebouncedState, useDisclosure } from "@mantine/hooks";
+import { BandSearch } from "../components/bands/BandSearch";
 import { BandsTable } from "../components/bands/BandsTable";
 import { CreateBand } from "../forms/bands/Create";
-import { usePrefetchListGenres } from "../hooks/api/useListGenres";
+import { useListBands } from "../hooks/api/useListBands";
 
 export const Bands = () => {
   const [opened, { open, close }] = useDisclosure(false);
-
-  // Prefetch genres, as they are likely to be used and rarely change
-  usePrefetchListGenres();
+  const [search, setSearch] = useDebouncedState("", 200);
+  const { data: bands, isLoading, isError } = useListBands(search);
 
   return (
     <>
       <Group justify="space-between">
-        <Title order={2}>All Bands</Title>
+        <Group>
+          <Title order={2}>All Bands</Title>
+          <BandSearch setSearch={setSearch} />
+        </Group>
         <Button onClick={open}>Create Band</Button>
       </Group>
 
       <Space h="md" />
 
-      <BandsTable />
+      <BandsTable bands={bands || []} isLoading={isLoading} isError={isError} />
 
       <Modal opened={opened} onClose={close} title="Create Band" centered>
         <CreateBand onSuccess={() => close()} />

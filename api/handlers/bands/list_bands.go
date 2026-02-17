@@ -11,6 +11,8 @@ import (
 func List(c *gin.Context) {
 	var bands []models.Band
 
+	search := c.Query("name")
+
 	db, err := db.DB()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
@@ -19,6 +21,7 @@ func List(c *gin.Context) {
 
 	err = db.Model(models.Band{}).
 		Preload("Genres").
+		Where("name LIKE ?", "%"+search+"%").
 		Find(&bands).Error
 
 	if err != nil {
