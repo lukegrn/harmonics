@@ -1,12 +1,16 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Center, Loader, SimpleGrid, Text } from "@mantine/core";
-import { useListBands } from "../../hooks/api/useListBands";
+import { Alert, Center, Loader, SimpleGrid } from "@mantine/core";
+import { Band } from "../../types/band";
 import { BandCover } from "./BandCover";
 
-export const BandsTable = () => {
-  const { data: bands, isLoading, isError } = useListBands();
+interface BandsTableProps {
+  bands: Band[];
+  isError: boolean;
+  isLoading: boolean;
+}
 
+export const BandsTable = ({ bands, isError, isLoading }: BandsTableProps) => {
   if (isError) {
     return (
       <Alert icon={<FontAwesomeIcon icon={faInfoCircle} />} color="red">
