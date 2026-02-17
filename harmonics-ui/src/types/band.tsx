@@ -5,4 +5,5 @@ export interface Band {
   name: string;
   genres: Genre[];
   img?: FileWithPath;
+  recommendations: Band[];
 }

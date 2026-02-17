@@ -17,7 +17,10 @@ func List(c *gin.Context) {
 		return
 	}
 
-	err = db.Model(models.Band{}).Preload("Genres").Find(&bands).Error
+	err = db.Model(models.Band{}).
+		Preload("Genres").
+		Find(&bands).Error
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
 		return
