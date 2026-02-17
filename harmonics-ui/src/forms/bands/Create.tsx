@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
   Center,
+  Divider,
   Group,
   Image,
   Loader,
@@ -21,7 +22,6 @@ import { useState } from "react";
 import { useAddBandImage } from "../../hooks/api/useAddBandImage";
 import { useCreateBand } from "../../hooks/api/useCreateBand";
 import { useListGenres } from "../../hooks/api/useListGenres";
-import { Genre } from "../../types/genre";
 
 interface CreateBandProps {
   onSuccess: () => void;
@@ -48,6 +48,7 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
         name: value.name,
         genres: value.genres.map((name) => ({ name, bands: [] })),
         img: file,
+        recommendations: [],
       },
       {
         onSuccess: () => {
@@ -128,7 +129,9 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
         data={genres?.map((g) => g.name)}
         {...form.getInputProps("genres")}
       />
-      <Space h="md" />
+
+      <Divider my="md" />
+
       <Group justify="flex-end">
         <Button disabled={mutation.isPending} onClick={submit}>
           {mutation.isPending ? <Loader color="teal" /> : "Create Band"}
