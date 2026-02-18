@@ -33,7 +33,7 @@ export const Create = ({ band, onSuccess }: CreateProps) => {
     },
   });
 
-  const { data: bands, isLoading: areBandsLoading } = useListBands();
+  const { data: bands, isLoading: areBandsLoading } = useListBands({});
 
   const mutation = useCreateRecommendation();
   const submit = () => {
