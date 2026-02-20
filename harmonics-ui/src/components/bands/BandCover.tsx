@@ -18,7 +18,7 @@ export const BandCover = ({ band }: BandCoverProps) => {
       onClick={() => navigate(`/bands/${band.name}`)}
     >
       <Card.Section>
-        <Image src={`/static/${band.name}`} height={160} alt={band.name} />
+        <Image src={`/static/${band.name}`} h="100%" alt={band.name} />
       </Card.Section>
 
       <Space h="xs" />
