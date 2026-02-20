@@ -9,7 +9,6 @@ import {
   Center,
   Divider,
   Group,
-  Image,
   Loader,
   Space,
   TagsInput,
@@ -18,10 +17,11 @@ import {
 } from "@mantine/core";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddBandImage } from "../../hooks/api/useAddBandImage";
 import { useCreateBand } from "../../hooks/api/useCreateBand";
 import { useListGenres } from "../../hooks/api/useListGenres";
+import { BandProfileCropper } from "./BandProfileCropper";
 
 interface CreateBandProps {
   onSuccess: () => void;
@@ -36,7 +36,8 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
     },
   });
 
-  const [file, setFile] = useState<FileWithPath>();
+  const [originalFile, setOriginalFile] = useState<FileWithPath>();
+  const [croppedFile, setCroppedFile] = useState<File>();
   const mutation = useCreateBand();
   const addImage = useAddBandImage();
   const { data: genres, isLoading: areGenresLoading } = useListGenres();
@@ -47,30 +48,18 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
       {
         name: value.name,
         genres: value.genres.map((name) => ({ name, bands: [] })),
-        img: file,
         recommendations: [],
       },
       {
         onSuccess: () => {
-          if (file) {
-            addImage.mutate({ f: file, name: value.name });
+          if (croppedFile) {
+            addImage.mutate({ f: croppedFile, name: value.name });
           }
 
           onSuccess();
         },
       },
     );
-  };
-
-  const Preview = () => {
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      return (
-        <Image src={imageUrl} onLoad={() => URL.revokeObjectURL(imageUrl)} />
-      );
-    }
-
-    return <></>;
   };
 
   if (areGenresLoading) {
@@ -83,38 +72,43 @@ export const CreateBand = ({ onSuccess }: CreateBandProps) => {
 
   return (
     <>
-      <Dropzone
-        accept={IMAGE_MIME_TYPE}
-        onDrop={(f) => setFile(f[0])}
-        multiple={false}
-      >
-        <Group
-          justify="center"
-          gap="xl"
-          mih={220}
-          style={{ pointerEvents: "none" }}
+      {!originalFile && (
+        <Dropzone
+          accept={IMAGE_MIME_TYPE}
+          onDrop={(f) => setOriginalFile(f[0])}
+          multiple={false}
         >
-          <Dropzone.Accept>
-            <FontAwesomeIcon icon={faCheckCircle} />
-          </Dropzone.Accept>
-          <Dropzone.Reject>
-            <FontAwesomeIcon icon={faXmarkCircle} />
-          </Dropzone.Reject>
-          <Dropzone.Idle>
-            <FontAwesomeIcon icon={faImage} size="2xl" />
-          </Dropzone.Idle>
+          <Group
+            justify="center"
+            gap="xl"
+            mih={220}
+            style={{ pointerEvents: "none" }}
+          >
+            <Dropzone.Accept>
+              <FontAwesomeIcon icon={faCheckCircle} />
+            </Dropzone.Accept>
+            <Dropzone.Reject>
+              <FontAwesomeIcon icon={faXmarkCircle} />
+            </Dropzone.Reject>
+            <Dropzone.Idle>
+              <FontAwesomeIcon icon={faImage} size="2xl" />
+            </Dropzone.Idle>
 
-          <div>
-            <Text size="xl" inline>
-              Upload a photo to help identify the band
-            </Text>
-          </div>
-        </Group>
-      </Dropzone>
+            <div>
+              <Text size="xl" inline>
+                Upload a photo to help identify the band
+              </Text>
+            </div>
+          </Group>
+        </Dropzone>
+      )}
 
-      {file && (
+      {originalFile && (
         <>
-          <Preview />
+          <BandProfileCropper
+            file={originalFile}
+            setCroppedFile={setCroppedFile}
+          />
           <Space h="md" />
         </>
       )}
