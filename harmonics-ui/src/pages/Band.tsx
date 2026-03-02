@@ -59,7 +59,7 @@ export const Band = () => {
 
             <SimpleGrid cols={4}>
               {band.recommendations.map((r) => (
-                <BandCover band={r} />
+                <BandCover band={r.band} categories={[r.category]} />
               ))}
             </SimpleGrid>
           </>

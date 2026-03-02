@@ -9,8 +9,9 @@ import (
 )
 
 type CreateRecommendationRequest struct {
-	A string `json:"a" binding:"required"`
-	B string `json:"b" binding:"required"`
+	A            string `json:"a" binding:"required"`
+	B            string `json:"b" binding:"required"`
+	CategoryName string `json:"category" binding:"required"`
 }
 
 func Create(c *gin.Context) {
@@ -31,6 +32,7 @@ func Create(c *gin.Context) {
 
 	var a = models.Band{Name: rec.A}
 	var b = models.Band{Name: rec.B}
+	var category = models.Category{Name: rec.CategoryName}
 
 	res := db.First(&a)
 	if res.Error != nil {
@@ -45,8 +47,8 @@ func Create(c *gin.Context) {
 	}
 
 	// Recommendations are bi-directional
-	a.Recommendations = append(a.Recommendations, &b)
-	b.Recommendations = append(b.Recommendations, &a)
+	a.Recommendations = append(a.Recommendations, models.Recommendation{Band: b, Category: category})
+	b.Recommendations = append(b.Recommendations, models.Recommendation{Band: a, Category: category})
 
 	res = db.Save(&a)
 

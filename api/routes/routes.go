@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lukegrn/harmonics/api/handlers/bands"
+	"github.com/lukegrn/harmonics/api/handlers/categories"
 	"github.com/lukegrn/harmonics/api/handlers/genres"
 	"github.com/lukegrn/harmonics/api/handlers/recommendations"
 )
@@ -33,5 +34,8 @@ func RegisterRoutes(router *gin.Engine) {
 
 	recommenationRoutes := api.Group("/recommendations")
 	recommenationRoutes.POST("", recommendations.Create)
+
+	categoryRoutes := api.Group("/categories")
+	categoryRoutes.GET("/", categories.List)
 
 }
