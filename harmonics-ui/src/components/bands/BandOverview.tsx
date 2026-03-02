@@ -15,6 +15,7 @@ export const BandOverview = ({ band }: BandOverviewProps) => {
           height={320}
           w={320}
           alt={band.name}
+          fallbackSrc={`https://placehold.co/600x600?text=${band.name}`}
         />
         <Stack gap="xs">
           <Title order={2}>{band.name}</Title>

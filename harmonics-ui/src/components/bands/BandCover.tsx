@@ -21,7 +21,12 @@ export const BandCover = ({ band, categories }: BandCoverProps) => {
       onClick={() => navigate(`/bands/${band.name}`)}
     >
       <Card.Section>
-        <Image src={`/static/${band.name}`} h="100%" alt={band.name} />
+        <Image
+          src={`/static/${band.name}`}
+          h="100%"
+          alt={band.name}
+          fallbackSrc={`https://placehold.co/600x600?text=${band.name}`}
+        />
       </Card.Section>
 
       <Space h="xs" />
