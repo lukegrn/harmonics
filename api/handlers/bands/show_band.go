@@ -21,9 +21,7 @@ func Show(c *gin.Context) {
 
 	b.Name = c.Param("name")
 
-	err = db.Model(models.Band{}).
-		Preload("Genres").
-		Preload("Recommendations").
+	err = db.Debug().Model(models.Band{}).
 		First(&b).
 		Error
 
@@ -32,6 +30,49 @@ func Show(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{})
 			return
 		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
+			return
+		}
+	}
+
+	err = db.Model(&b).Association("Genres").Find(&b.Genres)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
+		return
+	}
+
+	err = db.Model(&b).Association("Recommendations").Find(&b.Recommendations)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
+		return
+	}
+
+	for i := range b.Recommendations {
+		err = db.Debug().Model(&b.Recommendations[i]).
+			Association("Band").
+			Find(&b.Recommendations[i].Band)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
+			return
+		}
+
+		err = db.Debug().Model(&b.Recommendations[i]).
+			Association("Category").
+			Find(&b.Recommendations[i].Category)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
+			return
+		}
+
+		err = db.Model(&b.Recommendations[i].Band).
+			Association("Genres").
+			Find(&b.Recommendations[i].Band.Genres)
+
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "whoops, something went wrong!"})
 			return
 		}

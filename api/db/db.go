@@ -15,7 +15,9 @@ func Setup() (err error) {
 	}
 
 	err = db.AutoMigrate(&models.Band{},
-		&models.Genre{})
+		&models.Genre{},
+		&models.Recommendation{},
+		&models.Category{})
 
 	return err
 }
